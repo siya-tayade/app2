@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Exposure Intelligence Platform</title>
+    <!-- Google Fonts: Outfit for a modern tech feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Background Animation Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar glass-panel">
+            <div class="logo">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>CyberIntel</span>
+                <span class="version">v1.2 // PRO</span>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item active" data-target="dashboard">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </li>
+                <li class="nav-item" data-target="url-analyzer">
+                    <i class="fa-solid fa-link"></i> URL Analyzer
+                </li>
+                <li class="nav-item" data-target="password-analyzer">
+                    <i class="fa-solid fa-key"></i> Password Intel
+                </li>
+                <li class="nav-item" data-target="phishing-detector">
+                    <i class="fa-solid fa-envelope-open-text"></i> Phishing Scanner
+                </li>
+                <li class="nav-item" data-target="breach-checker">
+                    <i class="fa-solid fa-database"></i> Breach Check
+                </li>
+                <li class="nav-item" data-target="sentinel-ai">
+                    <i class="fa-solid fa-robot"></i> Sentinel AI <span class="badge new-badge">NEW</span>
+                </li>
+                <li class="nav-item" data-target="feedback-view">
+                    <i class="fa-solid fa-comment-dots"></i> Feedback
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <div class="dot pulse-green"></div>
+                    <span>System Online</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- Header -->
+            <header class="top-header glass-panel">
+                <div class="header-search">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search knowledge base...">
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" id="bell-btn"><i class="fa-regular fa-bell"></i><span
+                            class="notification-dot"></span></button>
+                    <div class="user-profile-container" style="position: relative;">
+                        <div class="user-profile" id="user-profile-btn" style="cursor: pointer;">
+                            <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
+                                alt="Admin">
+                            <span>Admin // SecOps</span>
+                            <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; margin-left: 5px;"></i>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div class="profile-dropdown hidden" id="profile-dropdown">
+                            <ul class="dropdown-list clean-list">
+                                <li onclick="switchToView('profile-view')"><i class="fa-solid fa-user"></i> My Profile
+                                </li>
+                                <li onclick="switchToView('settings-view')"><i class="fa-solid fa-gear"></i> Settings
+                                </li>
+                                <li style="height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0; padding: 0;">
+                                </li>
+                                <li class="text-red" onclick="window.location.href='/logout'"><i
+                                        class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Views Container -->
+            <div class="views-wrapper">
+
+                <!-- Dashboard View -->
+                <section id="dashboard" class="view-section active">
+                    <h1 class="view-title">Command Center</h1>
+                    <p class="view-subtitle">Live threat intelligence and system overview.</p>
+
+                    <div class="dashboard-grid">
+                        <div class="stat-card glass-panel highlight-blue">
+                            <div class="card-header">
+                                <h3>Total Scans</h3>
+                                <i class="fa-solid fa-radar icon-blue"></i>
+                            </div>
+                            <div class="stat-value" id="dash-total-scans">--</div>
+                            <div class="stat-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 12% today</div>
+                        </div>
+
+                        <div class="stat-card glass-panel highlight-red">
+                            <div class="card-header">
+                                <h3>Threats Detected</h3>
+                                <i class="fa-solid fa-bug icon-red"></i>
+                            </div>
+                            <div class="stat-value text-red" id="dash-threats">--</div>
+                            <div class="stat-trend trend-up text-red"><i class="fa-solid fa-arrow-up"></i> 5% today
+                            </div>
+                        </div>
+
+                        <div class="stat-card glass-panel highlight-green">
+                            <div class="card-header">
+                                <h3>Active Defenses</h3>
+                                <i class="fa-solid fa-server icon-green"></i>
+                            </div>
+                            <div class="stat-value text-green">Online</div>
+                            <div class="stat-trend text-green"><i class="fa-solid fa-check"></i> All systems go</div>
+                        </div>
+
+                        <!-- Gauge Chart Panel -->
+                        <div class="chart-card glass-panel span-2">
+                            <div class="card-header">
+                                <h3>Global Risk Factor</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="riskGaugeChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Activity Log -->
+                        <div class="activity-card glass-panel span-2">
+                            <div class="card-header">
+                                <h3>Recent Activity Log</h3>
+                            </div>
+                            <ul class="activity-list" id="activity-log-list">
+                                <!-- Populated via JS -->
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- URL Analyzer View -->
+                <section id="url-analyzer" class="view-section">
+                    <h1 class="view-title">URL Deep Scan</h1>
+                    <p class="view-subtitle">Heuristic analysis of web links to detect phishing and malware
+                        distribution.</p>
+
+                    <div class="tool-card glass-panel">
+                        <div class="input-group">
+                            <label>Target URL to Analyze</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-globe"></i>
+                                <input type="text" id="url-input" placeholder="https://example.com/login">
+                                <button class="action-btn" id="btn-analyze-url">Scan Now</button>
+                            </div>
+                        </div>
+
+                        <!-- Results Area -->
+                        <div class="results-area hidden" id="url-results">
+                            <div class="result-header">
+                                <h2>Analysis Report</h2>
+                            </div>
+                            <div class="score-display">
+                                <div class="score-circle" id="url-score-circle">
+                                    <span id="url-score-value">0</span>
+                                </div>
+                                <div class="verdict-box" id="url-verdict-box">
+                                    <h3 id="url-verdict">Safe</h3>
+                                    <p>Risk Score (0-100)</p>
+                                </div>
+                            </div>
+                            <div class="details-panel">
+                                <h3>Heuristic Breakdown</h3>
+                                <ul class="reasons-list" id="url-reasons-list">
+                                    <!-- Populated via JS -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Password Analyzer View -->
+                <section id="password-analyzer" class="view-section">
+                    <h1 class="view-title">Password Cryptanalysis</h1>
+                    <p class="view-subtitle">Evaluate password complexity, entropy, and estimated crack times using
+                        advanced logic.</p>
+
+                    <div class="tool-card glass-panel">
+                        <div class="input-group">
+                            <label>Password to Evaluate</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="password" id="password-input" placeholder="Enter a password to test...">
+                                <button class="icon-toggle-btn" id="toggle-pwd-btn"><i
+                                        class="fa-solid fa-eye"></i></button>
+                                <button class="action-btn" id="btn-analyze-pwd">Evaluate</button>
+                            </div>
+                        </div>
+
+                        <!-- Results Area -->
+                        <div class="results-area hidden" id="pwd-results">
+                            <div class="meter-container">
+                                <div class="meter-labels">
+                                    <span>Strength</span>
+                                    <span id="pwd-strength-text">Weak</span>
+                                </div>
+                                <div class="meter-bar-bg">
+                                    <div class="meter-bar-fill" id="pwd-meter-fill"></div>
+                                </div>
+                            </div>
+
+                            <div class="stats-grid">
+                                <div class="stat-box">
+                                    <i class="fa-solid fa-stopwatch"></i>
+                                    <h4>Crack Time</h4>
+                                    <p id="pwd-crack-time">Instant</p>
+                                </div>
+                                <div class="stat-box">
+                                    <i class="fa-solid fa-square-root-variable"></i>
+                                    <h4>Entropy Bits</h4>
+                                    <p id="pwd-entropy">0</p>
+                                </div>
+                            </div>
+
+                            <div class="feedback-panel" id="pwd-feedback-panel">
+                                <div class="warning-msg text-red hidden" id="pwd-warning"><i
+                                        class="fa-solid fa-triangle-exclamation"></i> <span
+                                        id="pwd-warning-text"></span></div>
+                                <h4>Suggestions:</h4>
+                                <ul id="pwd-suggestions" class="clean-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Phishing Detector View -->
+                <section id="phishing-detector" class="view-section">
+                    <h1 class="view-title">Phishing Email Scanner</h1>
+                    <p class="view-subtitle">NLP/Heuristic-based scanning to detect social engineering and scam texts.
+                    </p>
+
+                    <div class="tool-card glass-panel">
+                        <div class="input-group">
+                            <label>Paste Email Body or SMS Text</label>
+                            <textarea id="email-input" rows="6"
+                                placeholder="Dear Customer, urgent action is required on your account. Please click the link to verify your identity..."></textarea>
+                            <div class="btn-right">
+                                <button class="action-btn" id="btn-analyze-email">Scan Text</button>
+                            </div>
+                        </div>
+
+                        <!-- Results Area -->
+                        <div class="results-area hidden" id="email-results">
+                            <div class="score-display">
+                                <div class="score-circle" id="email-score-circle">
+                                    <span id="email-score-value">0</span>
+                                </div>
+                                <div class="verdict-box" id="email-verdict-box">
+                                    <h3 id="email-verdict">Safe</h3>
+                                    <p>Phishing Probability Score</p>
+                                </div>
+                            </div>
+                            <div class="details-panel">
+                                <h3>Detected Phishing Characteristics</h3>
+                                <ul class="reasons-list" id="email-reasons-list">
+                                    <!-- Populated via JS -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Breach Checker View -->
+                <section id="breach-checker" class="view-section">
+                    <h1 class="view-title">Breach Exposure Check</h1>
+                    <p class="view-subtitle">Query our mock dark web datastore to see if your email has been
+                        compromised.</p>
+
+                    <div class="tool-card glass-panel">
+                        <div class="input-group">
+                            <label>Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-at"></i>
+                                <input type="email" id="breach-input" placeholder="user@example.com">
+                                <button class="action-btn" id="btn-check-breach">Search Database</button>
+                            </div>
+                        </div>
+
+                        <!-- Results Area -->
+                        <div class="results-area hidden" id="breach-results">
+
+                            <div id="breach-status-banner" class="status-banner">
+                                <i class="fa-solid fa-shield-check" id="breach-status-icon"></i>
+                                <h3 id="breach-status-msg">Testing</h3>
+                            </div>
+
+                            <div class="breach-list-container hidden" id="breach-list-wrapper">
+                                <h3>Exposed Breaches Found</h3>
+                                <div class="breach-cards" id="breach-cards-list">
+                                    <!-- Populated via JS -->
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sentinel AI View -->
+                <section id="sentinel-ai" class="view-section">
+                    <h1 class="view-title">Sentinel AI Assistant</h1>
+                    <p class="view-subtitle">Your personal SecOps advisor. Ask me anything about cybersecurity.</p>
+
+                    <div class="chat-card glass-panel">
+                        <div class="chat-header">
+                            <div class="avatar">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div>
+                                <h3>Sentinel AI</h3>
+                                <div class="status-indicator">
+                                    <div class="dot pulse-blue"></div> Online
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Initial Greeting -->
+                            <div class="message ai-msg">
+                                <div class="msg-bubble">
+                                    System initialized. I am Sentinel AI. How can I assist your security posture today?
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input"
+                                placeholder="Ask a cybersecurity question... (e.g. 'What is phishing?')">
+                            <button id="btn-send-chat"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Profile View -->
+                <section id="profile-view" class="view-section">
+                    <h1 class="view-title">My Profile</h1>
+                    <p class="view-subtitle">Manage your account and security credentials.</p>
+                    <div class="tool-card glass-panel">
+                        <div style="display:flex; align-items:center; gap:20px; margin-bottom: 30px;">
+                            <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
+                                alt="Admin"
+                                style="width:100px; height:100px; border-radius:50%; border:3px solid var(--accent-blue);">
+                            <div>
+                                <h2 style="font-size:1.8rem;">Admin User</h2>
+                                <p class="text-muted">Role: SecOps Commander</p>
+                            </div>
+                        </div>
+                        <div class="input-group" style="margin-bottom:20px;">
+                            <label>Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope"></i>
+                                <input type="email" value="admin@cyber.local" disabled>
+                            </div>
+                        </div>
+                        <div class="btn-right">
+                            <button class="action-btn" onclick="showToast('Profile updated.', 'success')">Save
+                                Changes</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings View -->
+                <section id="settings-view" class="view-section">
+                    <h1 class="view-title">System Settings</h1>
+                    <p class="view-subtitle">Configure global parameters and integrations.</p>
+                    <div class="tool-card glass-panel">
+                        <div
+                            style="margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                            <h3 style="margin-bottom: 10px;">Security Thresholds</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Strict Threat Matching <br><small class="text-muted">Enforce exact string matching
+                                        for phishing rules.</small></span>
+                                <input type="checkbox" checked
+                                    style="width:20px; height:20px; accent-color: var(--accent-blue);">
+                            </div>
+                        </div>
+                        <div
+                            style="margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                            <h3 style="margin-bottom: 10px;">Notifications</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Email Alerts for High Risk Events</span>
+                                <input type="checkbox"
+                                    style="width:20px; height:20px; accent-color: var(--accent-blue);">
+                            </div>
+                        </div>
+                        <div class="btn-right">
+                            <button class="action-btn"
+                                onclick="showToast('Settings applied successfully.', 'success')">Apply
+                                Configuration</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Feedback View -->
+                <section id="feedback-view" class="view-section">
+                    <h1 class="view-title">Feedback & Reporting</h1>
+                    <p class="view-subtitle">Report bugs, suggest features, or communicate with the engineering team.
+                    </p>
+                    <div class="tool-card glass-panel">
+                        <div class="input-group" style="margin-bottom:20px;">
+                            <label>Feedback Type</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-list"></i>
+                                <select
+                                    style="width:100%; padding: 16px 16px 16px 45px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: var(--text-main); font-family: inherit; font-size: 1rem; appearance:none;">
+                                    <option>Bug Report</option>
+                                    <option>Feature Request</option>
+                                    <option>General Feedback</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="margin-bottom:20px;">
+                            <label>Details</label>
+                            <textarea rows="5" placeholder="Describe the issue or feature in detail..."></textarea>
+                        </div>
+                        <div class="btn-right">
+                            <button class="action-btn"
+                                onclick="showToast('Thank you! Your feedback has been submitted.', 'success')">Submit
+                                Feedback</button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Main Logic Script -->
+    <script src="{{ url_for('static', filename='js/main.js') }}?v=1.1"></script>
+    <script>
+        // Inline routing to guarantee availability immediately
+        window.switchToView = function (targetId) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            const target = document.getElementById(targetId);
+            if (target) target.classList.add('active');
+
+            const nav = document.querySelector(`.nav-item[data-target="${targetId}"]`);
+            if (nav) nav.classList.add('active');
+
+            const dropdown = document.getElementById('profile-dropdown');
+            if (dropdown) dropdown.classList.add('hidden');
+        };
+    </script>
+</body>
+
+</html>

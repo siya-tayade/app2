@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In // CyberIntel Platform</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 480px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .auth-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .auth-logo i {
+            color: var(--accent-cyan);
+            font-size: 2.2rem;
+        }
+
+        .auth-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .auth-form .input-wrapper input {
+            padding-left: 45px;
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, var(--accent-blue), #0284c7);
+            color: #fff;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+        }
+
+        .auth-toggle {
+            margin-top: 25px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .auth-toggle span {
+            color: var(--accent-cyan);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .auth-toggle span:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="auth-container">
+        <div class="glass-panel auth-card">
+            <div class="auth-logo">
+                <i class="fa-solid fa-shield-halved"></i>
+                CyberIntel
+            </div>
+            <p class="auth-subtitle" id="auth-subtitle">Sign in to access the security dashboard</p>
+
+            <form class="auth-form" method="POST" action="{{ url_for('login') }}">
+                <div class="input-wrapper" id="name-field" style="display: none;">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" name="name" placeholder="Full Name">
+                </div>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+
+                <button type="submit" class="auth-btn" id="auth-btn-text">Sign In &rarr;</button>
+            </form>
+
+            <div class="auth-toggle">
+                <span id="toggle-text-prefix">Don't have an account? </span>
+                <span id="toggle-action" onclick="toggleAuthMode()">Sign Up</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        let isLogin = true;
+        function toggleAuthMode() {
+            isLogin = !isLogin;
+            const nameField = document.getElementById('name-field');
+            const subtitle = document.getElementById('auth-subtitle');
+            const btnText = document.getElementById('auth-btn-text');
+            const togglePrefix = document.getElementById('toggle-text-prefix');
+            const toggleAction = document.getElementById('toggle-action');
+
+            if (isLogin) {
+                nameField.style.display = 'none';
+                subtitle.innerText = 'Sign in to access the security dashboard';
+                btnText.innerHTML = 'Sign In &rarr;';
+                togglePrefix.innerText = 'Don\'t have an account? ';
+                toggleAction.innerText = 'Sign Up';
+                document.title = "Sign In // CyberIntel Platform";
+            } else {
+                nameField.style.display = 'block';
+                subtitle.innerText = 'Create an account to join the platform';
+                btnText.innerHTML = 'Create Account &rarr;';
+                togglePrefix.innerText = 'Already have an account? ';
+                toggleAction.innerText = 'Sign In';
+                document.title = "Sign Up // CyberIntel Platform";
+            }
+        }
+    </script>
+</body>
+
+</html>
